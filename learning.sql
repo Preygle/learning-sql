@@ -65,6 +65,11 @@ WHERE rate IS NULL; #IS NOT NULL for inverse query
 UPDATE staff
 SET l_name = NULL, phone_num = "123456789", rate = 16.69
 WHERE emp_id = 6;
+SELECT * FROM staff;
+
+DELETE FROM staff # alone deletes the entire table
+WHERE emp_id = 5;
+SELECT * FROM staff;
 
 
 
