@@ -151,13 +151,121 @@ ADD CONSTRAINT KEY_NAME
 FOREIGN KEY(COLUMN NAME) REFERENCES TABLE_NAME(COLUMN CONTAINING PRIM KEY);
 
 
+CREATE TABLE customers (
+    cust_id INT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50)
+);
 
+CREATE TABLE transactions (
+    trans_id INT AUTO_INCREMENT PRIMARY KEY,
+    rate DECIMAL(5,2),
+    cust_id INT,
+    FOREIGN KEY (cust_id) REFERENCES customers(cust_id)
+) AUTO_INCREMENT = 101;
 
+INSERT INTO customers (first_name, last_name) VALUES 
+('Rahul', 'Verma'), 
+('Anjali', 'Sharma'), 
+('Rohan', 'Mehta'), 
+('Sneha', 'Patel'), 
+('Amit', 'Kumar');
 
+INSERT INTO transactions (rate, cust_id) VALUES 
+(250.75, 1), 
+(175.50, 3), 
+(320.00, 2), 
+(415.25, 2), 
+(199.99, 4);
 
+DROP TABLE TRANSACTIONS;
+SELECT * FROM customers;
+SELECT * FROM transactions;
 
+#JOIN: join 2 tables based on come common value(primary key and foreign key)
+SELECT trans_id, rate, first_name, last_name FROM transactions INNER JOIN customers
+ON transactions.cust_id = customers.cust_id;
 
+#use LEFT JOIN to fully display the table on left and the common values from table on right
+#use RIGHT JOIN to fully display the table on right and the common values from table on left
 
+SELECT COUNT(rate) AS count_rate
+FROM transactions;
 
+SELECT MAX(rate) AS max_value #MIN
+FROM transactions;
 
+SELECT SUM(rate) AS sum_of_rate #AVG
+FROM transactions;
+
+SELECT CONCAT(first_name, " ", last_name) AS name
+FROM customers;
+
+SELECT * FROM staff;
+
+ALTER TABLE staff
+ADD COLUMN eligibility VARCHAR(4) AFTER rate;
+
+UPDATE staff
+SET eligibility = "YES"
+WHERE rate > 12 AND hire_date > "2025-05-14";
+UPDATE staff
+SET eligibility = "NO"
+WHERE rate > 9 AND hire_date < "2025-05-14";
+
+#OTHER OPERATORS OR, NOT, BETWEEN(AND ALTERNATIVE FOR RANGE) IN(CHECKS FOR VALUES BELINGING TO PARTICULAR SET)
+
+SELECT * FROM staff;
+
+#LIKE, REGEX IN SQL
+# %: USE TO DENOTE RANDOM CHARACTERS WHICH MAY FOLLOW OR PRECEED A PARTICULAR CHARACTER SEQUENCE 
+# _: USED TO REPRESENT 1 RANDOM CHARACTER(NOT A SEQUENCE) {GOOD FOR FINDING DATA AT A PARTICULAR DATE}
+# CAN USE A COMBINATION OF THEM BOTH
+SELECT * FROM staff
+WHERE hire_date LIKE "2025%";
+
+SELECT * FROM staff
+WHERE hire_date LIKE "2025-05-1_";
+
+#ORDER BY: ORDER TABLE BY VALUES BASED ON A COLUMN
+SELECT * FROM staff
+ORDER BY rate, hire_date DESC; # NO DESC = DEFAULT ASC # IF 2 VALUES SAME, ODER IS DONE BASED ON SECOND PARAMETER
+ 
+#LIMIT: LIMITS THE NUMEBR OF DATA IN A ROW DISPLAYED
+#LIMIT X, Y: DISPLAYS Y RECORDS AFTER X DATA
+SELECT * FROM staff
+ORDER BY rate DESC LIMIT 1, 1;
+
+#UNION: JOIN 2 TABLES TOGETHER COLUMN WISE
+SELECT trans_id, rate FROM transactions
+UNION ALL #ALL INCLUDES DUPES
+SELECT first_name, last_name FROM customers;
+
+CREATE TABLE emp (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50),
+    last_name VARCHAR(50),
+    hourly_pay DECIMAL(5,2),
+    job VARCHAR(50),
+    hire_date DATE,
+    supervisor_id INT
+);
+
+INSERT INTO emp (employee_id, first_name, last_name, hourly_pay, job, hire_date, supervisor_id) VALUES
+(1, 'Eugene', 'Krabs', 25.50, 'manager', '2023-01-02', NULL),
+(2, 'Squidward', 'Tentacles', 15.00, 'cashier', '2023-01-03', 5),
+(3, 'Spongebob', 'Squarepants', 12.50, 'cook', '2023-01-04', 5),
+(4, 'Patrick', 'Star', 12.50, 'cook', '2023-01-05', 5),
+(5, 'Sandy', 'Cheeks', 17.25, 'asst. manager', '2023-01-06', 1),
+(6, 'Sheldon', 'Plankton', 10.00, 'janitor', '2023-01-07', 5);
+
+SELECT * FROM emp;
+
+SELECT a.first_name, a.last_name, 
+	   CONCAT(b.first_name, b.last_name) as supervisor
+FROM
+emp AS a
+INNER JOIN
+emp AS b
+on b.employee_id = a.supervisor_id;
 
