@@ -269,3 +269,65 @@ INNER JOIN
 emp AS b
 on b.employee_id = a.supervisor_id;
 
+#VIEW: CREATES A SUBTABLE FOR A TABLE, (NO NEW TABLES ARE CREATED), IS ASSIGNS A NAME TO PARTICULAR GROUPS OF COLUMNS, ANY CHANGES AMDE TO THE PARENT TABLE REFLECTS ON THE VIEW
+
+CREATE VIEW emp_name AS
+SELECT first_name, last_name
+FROM emp;
+
+SELECT * FROM emp_name;
+
+DROP VIEW emp_name; #DROPS THE VIEW
+
+#INDEXES: makes findeing data easier(uses btree) but makes insertion more time consuming
+SHOW INDEXES FROM emp;
+
+CREATE INDEX l_name
+ON emp(last_name);
+
+ALTER TABLE emp
+DROP INDEX l_name;
+
+CREATE INDEX f_l_name
+ON emp(first_name, last_name); #IF USING ONLY LAST NAME, INDEX IS NOT UTILIZED
+
+#SUB QUERY: NORMAL QUERY(SUBQUERY) I.E. USE THE RESULT OF A SUBQUERY AS A VALUE STORES IN A VARIABLE
+# FIRST THE INNER MOST QUERY IS IS RESOLVED, THE ITS DATA IS RETURNED AS IN INPUT TO THE OUTER QUERY
+SELECT * FROM emp;
+
+SELECT * FROM emp 
+WHERE hourly_pay > 
+(SELECT AVG(hourly_pay) FROM emp);
+
+
+SELECT first_name, last_name FROM customers
+WHERE cust_id IN
+(SELECT DISTINCT cust_id 
+FROM transactions
+WHERE cust_id IS NOT NULL);
+
+ALTER TABLE transactions
+ADD COLUMN order_date date;
+
+UPDATE transactions
+SET order_date = "2025-04-01"
+WHERE trans_id = 105;
+
+SELECT * FROM transactions;
+
+#GRUP BY: GROUP ALL ROWS HAVING SPECIFIC VALUE(BASED ON FUNCTIONS SUCH AS SUM, AVG, MAX, ETC) 
+SELECT MAX(rate) AS max, order_date
+FROM transactions
+GROUP BY order_date;
+
+#HAVING: USED IN PLACE OF WHERE WHEN DEALING WITH GROUP BY
+SELECT MAX(rate) AS max, order_date
+FROM transactions
+GROUP BY order_date
+HAVING max > 200;
+
+#ROLLUP: EXTENSION OF GROUP BY, PRODUCES ANOTHER ROW AND GIVES GRAND TOTAL (TOTAL SUM, TOTAL COUNT)
+SELECT SUM(rate) AS max, order_date
+FROM transactions
+GROUP BY order_date WITH ROLLUP
+HAVING max > 200;
