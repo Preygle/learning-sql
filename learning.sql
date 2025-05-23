@@ -5,6 +5,8 @@ CREATE TABLE employes (
     rate DECIMAL(3 , 2 ),
     hire_date DATETIME
     #, FOREIGN KEY(COLUMN NAME TO ADD KEY) REFERENCES TABLE_B_NAME(COLUMN NAME OF PRIMARY KEY IN TABLE B)
+    #ON DELETE SET NULL
+    #ON DELETE CASCADE	
 ) SELECT * FROM
     employes;
 
@@ -331,3 +333,66 @@ SELECT SUM(rate) AS max, order_date
 FROM transactions
 GROUP BY order_date WITH ROLLUP
 HAVING max > 200;
+
+#ON DELETE SET NULL: ON DELETING FOREIGN KEY, ITS SET TO NULL
+#ON DELETE CASCADE: ON DELETING FOREIGN KEY, ROW IS DELETED
+
+SELECT * FROM transactions;
+ALTER TABLE transactions
+ADD CONSTRAINT fk_cust
+FOREIGN KEY(cust_id) REFERENCES customers(cust_id)
+ON DELETE SET NULL;
+
+DELETE FROM customers
+WHERE cust_id = 2;
+
+#STORED PROCEDURE: STORES AN SQL QUERY AS A CUSTOM FUNCTION
+
+DELIMITER $$
+CREATE PROCEDURE staff_details()
+BEGIN
+    SELECT * FROM staff;
+END $$
+DELIMITER ;
+
+CALL staff_details();
+
+DROP PROCEDURE staff_details;
+
+DELIMITER $$
+CREATE PROCEDURE find_customer(IN id INT)
+BEGIN
+	SELECT * FROM customers
+    WHERE cust_id = id;
+END$$
+DELIMITER ;
+
+CALL find_customer(3);
+
+#TRIGGERS: auto executes some query based on INSERT, DELETE, UPDATE on a set on rules
+
+SELECT * FROM staff;
+
+ALTER TABLE staff
+ADD COLUMN salary DECIMAL(10, 2) AFTER rate;
+
+UPDATE staff
+SET salary = rate * 2080;
+
+CREATE TRIGGER upd
+BEFORE UPDATE ON staff
+FOR EACH ROW
+SET NEW.salary = NEW.rate * 2080;
+
+UPDATE staff
+SET rate = 20 WHERE emp_id = 1;
+
+CREATE TRIGGER before_sal_ins
+ BEFORE INSERT ON staff
+ FOR EACH ROW
+ SET NEW.salary = NEW.rate * 2080; #use OLD to refer to old values
+ 
+INSERT INTO staff (emp_id, f_name, l_name, phone_num, rate, eligibility, hire_date) 
+VALUES(8, "HUFZA", "ANSARI", 342487372, 17.45, "YES", "2023-09-10");
+
+ 
